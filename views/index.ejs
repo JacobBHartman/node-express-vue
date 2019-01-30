@@ -1,0 +1,33 @@
+<% include partials/header %>
+        <h1>Add Person</h1>
+        <% if(errors){ %>
+            <ul>
+            <% errors.forEach(function(error){ %>
+                <li><%= error.msg %></li>
+            <% }) %>
+            </ul>
+        <% } %>
+        <form method="POST" action="/people/add">
+            <label>Full Name</label>
+            <input type="text" name="full_name">
+            <br>
+            <label>Father</label>
+            <input type="text" name="father">
+            <br>
+            <label>Mother</label>
+            <input type="text" name="mother">
+            <br><br>
+            <input type="submit" value="Submit">
+        </form>
+        <h1><%= title %></h1>
+        <ul>
+        <% people.forEach(function(person){ %>
+            <li><%= person.full_name %> =
+                <%= person.father %> +
+                <%= person.mother %>
+                - <a href="#"
+                class="deletePerson"
+                data-id="<%= person._id %>">Delete</a></li>
+        <% }) %>
+        </ul>
+<% include partials/footer %>
