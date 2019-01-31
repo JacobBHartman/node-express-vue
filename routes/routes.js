@@ -1,9 +1,21 @@
-var express = require('express');
-var router  = express.Router();
+const express = require('express');
+const mongoose = require('mongoose')
 
-var mongojs = require('mongojs')
-var db = mongojs('tribeapp', ['people'])
-var ObjectId = mongojs.ObjectId;
+const router  = express.Router();
+
+
+
+// Test DB connection
+const connectionUrl = 'mongodb://localhost:27017/tribeapp'
+mongoose.connect(connectionUrl, {useNewUrlParser: true});
+
+const personSchema = new mongoose.Schema({
+    full_name: String,
+    father: String,
+    mother: String
+});
+
+var Person = mongoose.model('Person', personSchema);
 
 // Declare middleware specific to an express router
 router.use(function timeLog(req, res, next) {
@@ -11,9 +23,23 @@ router.use(function timeLog(req, res, next) {
     next();
 });
 
-// Declare routes
+/*==========================*\
+||                          ||
+|| Define schema            ||
+||                          ||
+\*==========================*/
+
+
+
+/*==========================*\
+||                          ||
+|| Declare routes           ||
+||                          ||
+\*==========================*/
+
+// Get index page
 router.get('/', function(req, res){
-    db.people.find(function(err, docs) {
+    Person.find( function (err, docs){
         console.log(docs);
         res.render('index', {
             title: 'Family',
@@ -22,45 +48,51 @@ router.get('/', function(req, res){
     })
 });
 
+// Add a person if all fields are submitted
 router.post('/people/add', function(req, res){
 
     req.checkBody('full_name', 'Full Name is required.').notEmpty();
     req.checkBody('father', 'Father is required.').notEmpty();
     req.checkBody('mother', 'Mother is required.').notEmpty();
 
-    var errors = req.validationErrors();
+    let errors = req.validationErrors();
     console.log(errors)
 
     if(errors){
-        res.render('index', {
-            title: 'Family',
-            people: people,
-            errors: errors
+        Person.find( function (err, docs){
+            console.log(docs);
+            res.render('index', {
+                title: 'Family',
+                errors: errors,
+                people: docs
+            });
         });
+
     } else {
-        var newPerson = {
+        var newPerson = new Person({
             full_name: req.body.full_name,
             father:    req.body.father,
             mother:    req.body.mother
-        }
-        db.people.insert(newPerson, function(err, result){
+        });
+        newPerson.save(function (err, newPerson) {
             if(err){
                 console.log(err);
             }
-            res.redirect('/');
-        });
+        })
+        res.redirect('/');
     }
 });
 
+// Delete a person
 router.delete('/people/delete/:id', function(req, res){
-    db.people.remove({_id: ObjectId(req.params.id)}, function(err, result){
+    Person.deleteOne({ _id: req.params.id }, function (err) {
         if(err){
             console.log(err);
-        }
-        res.redirect('/');
-    });
+        };
+        res.redirect('/')
+    })
 });
 
 
-// 
+
 module.exports = router;

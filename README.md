@@ -70,3 +70,6 @@ Another special name is `views` which is a directory for the applications
 `app.listen(path, [callback]) starts a UNIX socket and listens for connections
 on the given path. It is identical to Node's `http.Server.listen()
 ```
+
+change vars
+change mongojs to mongoose
