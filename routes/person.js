@@ -1,29 +1,11 @@
+// Import modules
 const express = require('express');
-const mongoose = require('mongoose')
+const router = express.Router();
 
+// Load user model
 const Person = require("../models/Person.js")
-const router  = express.Router();
 
-
-
-// Test DB connection
-const connectionUrl = 'mongodb://localhost:27017/tribeapp'
-mongoose.connect(connectionUrl, {useNewUrlParser: true});
-
-// Declare middleware specific to an express router
-router.use(function timeLog(req, res, next) {
-    console.log('Time: ', Date.now());
-    next();
-});
-
-
-/*==========================*\
-||                          ||
-|| Declare routes           ||
-||                          ||
-\*==========================*/
-
-// Get index page
+// Get index page which is a de facto "get all people"
 router.get('/', function(req, res){
     Person.find( function (err, docs){
         console.log(docs);
@@ -78,7 +60,5 @@ router.delete('/people/delete/:id', function(req, res){
         res.redirect('/')
     })
 });
-
-
 
 module.exports = router;
