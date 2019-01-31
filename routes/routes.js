@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose')
 
+const Person = require("../models/Person.js")
 const router  = express.Router();
 
 
@@ -9,26 +10,11 @@ const router  = express.Router();
 const connectionUrl = 'mongodb://localhost:27017/tribeapp'
 mongoose.connect(connectionUrl, {useNewUrlParser: true});
 
-const personSchema = new mongoose.Schema({
-    full_name: String,
-    father: String,
-    mother: String
-});
-
-var Person = mongoose.model('Person', personSchema);
-
 // Declare middleware specific to an express router
 router.use(function timeLog(req, res, next) {
     console.log('Time: ', Date.now());
     next();
 });
-
-/*==========================*\
-||                          ||
-|| Define schema            ||
-||                          ||
-\*==========================*/
-
 
 
 /*==========================*\
